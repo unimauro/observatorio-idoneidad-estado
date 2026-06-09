@@ -13,3 +13,4 @@ data/processed/*
 .ipynb_checkpoints/
 dist/
 .pytest_cache/
+web/data/
