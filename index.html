@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Observatorio de Idoneidad y Capacidad del Estado peruano</title>
+  <meta name="description" content="Indicadores neutrales de mérito, estabilidad y capacidad de las entidades del Estado peruano. Datos preliminares cifrados; acceso de revisión con contraseña. Correlación no implica causalidad." />
+  <meta name="author" content="Carlos Cárdenas Fernández" />
+  <meta name="robots" content="noindex" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <style>
+    :root { --bg:#0b1220; --card:#111c33; --bd:#22304d; --tx:#e2e8f0; --mut:#94a3b8; --pri:#3b82f6; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--tx);
+      font-family:Inter,system-ui,Arial,sans-serif; line-height:1.5; }
+    header { border-top:6px solid #d91023; padding:1.5rem 1rem; max-width:1100px; margin:0 auto; }
+    h1 { margin:.2rem 0; font-size:1.55rem; } .sub { color:var(--mut); }
+    main { max-width:1100px; margin:0 auto; padding:0 1rem 3rem; }
+    .banner { background:#3b2f0b; border:1px solid #a16207; color:#fde68a; padding:.75rem 1rem; border-radius:10px; font-size:.85rem; margin:1rem 0; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
+    .card { background:var(--card); border:1px solid var(--bd); border-radius:12px; padding:1rem; }
+    .kpi .v { font-size:1.6rem; font-weight:800; } .kpi .l { color:var(--mut); font-size:.8rem; }
+    h2 { font-size:1.1rem; margin:1.6rem 0 .6rem; }
+    table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    th,td { text-align:left; padding:.4rem .5rem; border-bottom:1px solid var(--bd); }
+    th { color:var(--mut); cursor:pointer; } tbody tr:hover { background:#16223c; }
+    .pill { padding:.05rem .5rem; border-radius:999px; font-size:.7rem; font-weight:700; }
+    .alto{background:#064e3b;color:#6ee7b7;} .medio{background:#3b2f0b;color:#fde68a;} .bajo{background:#4c0519;color:#fda4af;}
+    input { background:#0b1220; border:1px solid var(--bd); color:var(--tx); padding:.5rem .6rem; border-radius:8px; width:100%; }
+    button { background:var(--pri); color:#fff; border:0; border-radius:8px; padding:.55rem 1rem; font-weight:600; cursor:pointer; }
+    .lock { max-width:460px; margin:1.5rem auto; text-align:center; }
+    .muted { color:var(--mut); font-size:.78rem; }
+    footer { color:var(--mut); font-size:.75rem; border-top:1px solid var(--bd); margin-top:2rem; padding-top:1rem; }
+    a { color:#7dd3fc; } #app { display:none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏛️ Observatorio de Idoneidad y Capacidad del Estado peruano</h1>
+    <div class="sub">Indicadores <b>descriptivos y neutrales</b> de mérito, estabilidad y capacidad por entidad · datos públicos</div>
+  </header>
+  <main>
+    <div class="banner">
+      <b>Borrador en validación (Fase 1).</b> El Índice ICE describe, no juzga. <b>Correlación ≠ causalidad.</b>
+      No clasifica personas por ideología ni identidad. La <b>idoneidad</b> real (perfil del puesto vs. credenciales) es <b>Fase 2</b>.
+      La <b>estabilidad</b> está subestimada por la cobertura temporal de la fuente.
+    </div>
+
+    <!-- Acceso de revisión (descifrado en el navegador) -->
+    <div id="lock" class="card lock">
+      <h2 style="margin-top:0">🔒 Acceso de revisión</h2>
+      <p class="muted">Los datos con puntajes están <b>cifrados</b> (AES-GCM). Sin la contraseña no son legibles.
+      Es una vista preliminar para revisión, no una publicación final.</p>
+      <input id="pw" type="password" placeholder="Contraseña de revisión" autocomplete="off" />
+      <button id="unlock" style="margin-top:.6rem;width:100%">Descifrar y ver datos</button>
+      <p id="err" class="muted" style="color:#fda4af;min-height:1.1em"></p>
+      <p class="muted">Solo metodología y código son públicos:
+        <a href="https://github.com/unimauro/observatorio-idoneidad-estado" target="_blank" rel="noopener">repositorio</a>.</p>
+    </div>
+
+    <!-- Dashboard (aparece tras descifrar) -->
+    <div id="app">
+      <div class="sub" id="meta"></div>
+      <div class="grid" id="kpis" style="margin-top:1rem"></div>
+      <h2>Top 25 entidades por Índice ICE</h2>
+      <div class="card"><canvas id="chTop" height="120"></canvas></div>
+      <div class="grid">
+        <div class="card"><h2 style="margin-top:0">Régimen laboral</h2><canvas id="chReg" height="200"></canvas></div>
+        <div class="card"><h2 style="margin-top:0">Mérito vs. capacidad</h2><canvas id="chSca" height="200"></canvas></div>
+      </div>
+      <h2>Entidades — explorar</h2>
+      <div class="card">
+        <input id="q" placeholder="Filtrar por nombre…" />
+        <div style="overflow:auto;max-height:520px;margin-top:.6rem">
+          <table id="tbl"><thead><tr>
+            <th data-k="nombre">Entidad</th><th data-k="categoria">Categoría</th><th data-k="ice">ICE</th>
+            <th data-k="meritocracia">Mérito</th><th data-k="capacidad">Capacidad</th><th data-k="n_personal">Personal</th>
+          </tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+      <h2>Cargos de decisión con mayor recambio</h2>
+      <div class="card" style="overflow:auto;max-height:420px">
+        <table id="rot"><thead><tr><th>Entidad</th><th>Cargo</th><th>Nivel</th><th>Personas</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <footer>
+      <b>Observatorio de Idoneidad y Capacidad del Estado.</b> Desarrollado por
+      <a href="https://unimauro.github.io" target="_blank" rel="noopener">Carlos Cárdenas Fernández</a>.
+      Fuente: <a href="https://github.com/unimauro/peru-transparente" target="_blank" rel="noopener">peru-transparente</a> (Portal de Transparencia Estándar).
+      Solo evidencia verificable · correlación ≠ causalidad.
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
