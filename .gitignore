@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+data/raw/*
+data/interim/*
+data/processed/*
+!data/**/.gitkeep
+*.duckdb
+*.duckdb.wal
+.DS_Store
+.ipynb_checkpoints/
+dist/
+.pytest_cache/

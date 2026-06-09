@@ -1,0 +1,49 @@
+# Configuración de indicadores del Índice de Idoneidad y Capacidad del Estado (ICE).
+# Todos los pesos son CONFIGURABLES y AUDITABLES. Cambiar aquí re-calcula el índice.
+# Principio: medir mérito, estabilidad y capacidad de FORMA NEUTRAL sobre TODA entidad
+# y todo el personal. No se clasifica a personas por ideología, identidad ni afiliación.
+
+# --- Régimen laboral → proxy de meritocracia (0 = discrecional, 1 = mérito/carrera) ---
+# Fuente de categorías: Portal de Transparencia Estándar (campo `regimen`).
+merito_por_regimen:
+  "Ley Servir": 1.00      # carrera / concurso público de méritos (Ley 30057)
+  "Nombrado": 0.90        # carrera (D.L. 276)
+  "CAP": 0.85
+  "728": 0.70             # régimen privado
+  "PAC": 0.55
+  "FAG": 0.55
+  "CAS": 0.50             # contrato temporal (D.L. 1057)
+  "Locación": 0.20        # locación de servicios / consultoría
+  "Altos Funcionarios": 0.15  # designación política / cargo de confianza
+  "_default": 0.50
+
+# --- Nivel jerárquico → ponderación por poder de decisión ---
+# Un cargo de decisión inestable o no idóneo afecta más el servicio que uno operativo.
+peso_por_nivel:
+  "Ministro/Titular": 1.00
+  "Viceministro": 0.95
+  "Secretario General": 0.85
+  "Gerente General": 0.85
+  "Director/a": 0.75
+  "Gerente": 0.70
+  "Subdirector/Subgerente": 0.55
+  "Jefe/a": 0.50
+  "_default": 0.30
+
+# --- Composición del Índice ICE por entidad (deben sumar 1.0) ---
+# Sub-índices computables HOY con datos de peru-transparente:
+ice_pesos:
+  meritocracia: 0.35      # % de cargos por mérito vs. confianza
+  estabilidad: 0.35       # permanencia / baja rotación en cargos de decisión
+  capacidad: 0.30         # dotación e inversión en personal adecuadas
+  idoneidad: 0.00         # FASE 2: perfil del puesto vs. credenciales (requiere ingesta de hojas de vida/SERVIR)
+
+# --- Parámetros de estabilidad ---
+estabilidad:
+  meses_minimos_deseables: 18   # permanencia mínima razonable en cargo de decisión
+  ventana_rotacion_meses: 12    # ventana para medir rotación
+
+# --- Umbrales de interpretación (solo para etiquetar, no para juzgar) ---
+interpretacion_ice:
+  alto: 0.70
+  medio: 0.45
