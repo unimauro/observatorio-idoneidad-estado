@@ -92,31 +92,81 @@ function render({ ice, stats, rotacion, redes, sectores }) {
     `<tr><td>${e.origen_nombre}</td><td>${e.destino_nombre}</td><td>${e.peso}</td></tr>`).join('');
 }
 
-const ICONS = { MIMP: 'fa-venus', MIDIS: 'fa-hand-holding-heart', MINEDU: 'fa-graduation-cap', MINSA: 'fa-heart-pulse' };
+const ICONS = {
+  MINSA: 'fa-heart-pulse', MINEDU: 'fa-graduation-cap', MTC: 'fa-road', MEF: 'fa-coins',
+  MININTER: 'fa-shield-halved', MINDEF: 'fa-jet-fighter', MIDAGRI: 'fa-wheat-awn',
+  VIVIENDA: 'fa-house', MTPE: 'fa-briefcase', MINJUS: 'fa-scale-balanced',
+  MIDIS: 'fa-hand-holding-heart', MIMP: 'fa-venus',
+};
+const _charts = {};
+const money = v => v >= 1e6 ? `S/ ${(v / 1e6).toFixed(1)}M` : `S/ ${(v || 0).toLocaleString('es-PE')}`;
+function mkChart(id, cfg) { if (_charts[id]) _charts[id].destroy(); _charts[id] = new Chart(document.getElementById(id), cfg); }
+
 function renderSectores(sectores) {
   const cont = document.getElementById('sectores');
   if (!cont) return;
-  cont.innerHTML = sectores.map(s => {
-    const reg = (s.regimen || []).slice(0, 4).map(r => `${r.regimen}: ${r.n}`).join(' · ');
-    const ents = (s.top_entidades || []).slice(0, 5).map(e =>
-      `<tr><td>${e.nombre}</td><td style="text-align:right">${e.n_personal.toLocaleString('es-PE')}</td><td style="text-align:right">${e.ice ?? '—'}</td></tr>`).join('');
-    const cargos = (s.top_cargos_decision || []).slice(0, 5).map(c => `${c.cargo} (${c.n})`).join(' · ');
-    return `<div class="card">
+
+  // Comparación entre ministerios: % mérito (robusto)
+  mkChart('chMin', {
+    type: 'bar',
+    data: { labels: sectores.map(s => s.clave),
+      datasets: [{ label: '% mérito', data: sectores.map(s => s.merito_ponderado),
+        backgroundColor: sectores.map(s => s.merito_ponderado >= .6 ? '#10b981' : s.merito_ponderado >= .45 ? '#f59e0b' : '#f43f5e') }] },
+    options: { plugins: { legend: { display: false } }, scales: { y: { max: 1, title: { display: true, text: '% mérito' } } } },
+  });
+
+  cont.innerHTML = sectores.map((s, i) => `
+    <div class="card" style="cursor:pointer" data-i="${i}">
       <div style="display:flex;align-items:center;gap:.5rem">
         <i class="fa-solid ${ICONS[s.clave] || 'fa-building'}" style="color:#3b82f6"></i>
-        <b>${s.clave}</b> <span class="pill ${s.ice_ponderado >= .70 ? 'alto' : s.ice_ponderado >= .45 ? 'medio' : 'bajo'}">ICE ${s.ice_ponderado}</span>
+        <b>${s.clave}</b>
+        <span class="pill ${s.merito_ponderado >= .6 ? 'alto' : s.merito_ponderado >= .45 ? 'medio' : 'bajo'}" style="margin-left:auto">mérito ${s.merito_ponderado}</span>
       </div>
-      <div class="muted" style="margin:.2rem 0 .5rem">${s.nombre}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;font-size:.8rem">
+      <div class="muted" style="margin:.2rem 0 .5rem;font-size:.75rem">${s.nombre}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.25rem;font-size:.78rem">
+        <div>💰 Planilla/mes: <b>${money(s.masa_salarial_mensual)}</b></div>
         <div>👥 Personal: <b>${s.n_personal.toLocaleString('es-PE')}</b></div>
         <div>🏢 Entidades: <b>${s.n_entidades}</b></div>
-        <div>⭐ Mérito: <b>${s.merito_ponderado}</b></div>
-        <div>🎯 Cargos decisión: <b>${s.n_decision}</b></div>
-        ${s.ingreso_promedio ? `<div>💰 Ingreso prom.: <b>S/ ${s.ingreso_promedio.toLocaleString('es-PE')}</b></div>` : ''}
+        <div>🎯 Cargos dec.: <b>${s.n_decision}</b></div>
       </div>
-      <div class="muted" style="margin:.5rem 0 .2rem"><b>Régimen:</b> ${reg}</div>
-      <table style="margin-top:.3rem"><thead><tr><th>Sub-entidad</th><th style="text-align:right">Personal</th><th style="text-align:right">ICE</th></tr></thead><tbody>${ents}</tbody></table>
-      <div class="muted" style="margin-top:.4rem"><b>Cargos de decisión top:</b> ${cargos || '—'}</div>
-    </div>`;
-  }).join('');
+      <div class="muted" style="margin-top:.4rem;font-size:.72rem">clic para detalle ↓</div>
+    </div>`).join('');
+
+  cont.querySelectorAll('.card').forEach(c => c.onclick = () => renderSectorDetail(sectores[+c.dataset.i]));
+  if (sectores[0]) renderSectorDetail(sectores[0]);
+}
+
+function renderSectorDetail(s) {
+  const d = document.getElementById('sectorDetail');
+  const ents = (s.top_entidades || []).map(e =>
+    `<tr><td>${e.nombre}</td><td style="text-align:right">${e.n_personal.toLocaleString('es-PE')}</td><td style="text-align:right">${e.ice ?? '—'}</td></tr>`).join('');
+  const cargos = (s.top_cargos_decision || []).slice(0, 8).map(c => `${c.cargo} (${c.n})`).join(' · ');
+  d.innerHTML = `<div class="card" style="border-color:#3b82f6">
+    <h2 style="margin-top:0"><i class="fa-solid ${ICONS[s.clave] || 'fa-building'}"></i> ${s.clave} — ${s.nombre}</h2>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
+      <div class="kpi"><div class="v">${money(s.masa_salarial_mensual)}</div><div class="l">planilla/mes</div></div>
+      <div class="kpi"><div class="v">${s.n_personal.toLocaleString('es-PE')}</div><div class="l">personal</div></div>
+      <div class="kpi"><div class="v">${s.merito_ponderado}</div><div class="l">% mérito</div></div>
+      <div class="kpi"><div class="v">${s.ice_ponderado}</div><div class="l">ICE</div></div>
+      <div class="kpi"><div class="v">${s.n_decision}</div><div class="l">cargos decisión</div></div>
+    </div>
+    <div class="grid" style="margin-top:1rem">
+      <div><h2 style="font-size:.9rem">Régimen laboral</h2><canvas id="chSecReg" height="200"></canvas></div>
+      <div><h2 style="font-size:.9rem">Nivel jerárquico</h2><canvas id="chSecNiv" height="200"></canvas></div>
+    </div>
+    <h2 style="font-size:.9rem">Sub-entidades del sector</h2>
+    <div style="overflow:auto;max-height:300px"><table><thead><tr><th>Entidad</th><th style="text-align:right">Personal</th><th style="text-align:right">ICE</th></tr></thead><tbody>${ents}</tbody></table></div>
+    <div class="muted" style="margin-top:.5rem"><b>Cargos de decisión top:</b> ${cargos || '—'}</div>
+  </div>`;
+
+  const reg = s.regimen || [];
+  mkChart('chSecReg', { type: 'bar',
+    data: { labels: reg.map(r => r.regimen || '(s/d)'),
+      datasets: [{ data: reg.map(r => r.n), backgroundColor: reg.map(r => /Servir|Nombrado/i.test(r.regimen) ? '#10b981' : /CAS|Locaci|Altos/i.test(r.regimen) ? '#f59e0b' : '#64748b') }] },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } } } });
+
+  const niv = (s.nivel || []).filter(n => n.nivel !== 'Operativo').slice(0, 8);
+  mkChart('chSecNiv', { type: 'bar',
+    data: { labels: niv.map(n => n.nivel), datasets: [{ data: niv.map(n => n.n), backgroundColor: '#3b82f6' }] },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } } } });
 }
