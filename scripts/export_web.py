@@ -12,7 +12,8 @@ from pathlib import Path
 import duckdb
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-from observatorio.config import DUCKDB_PATH  # noqa: E402
+from observatorio.config import DUCKDB_PATH, load_indicators  # noqa: E402
+from observatorio.metrics import sectores as sectores_m  # noqa: E402
 
 OUT = Path(__file__).resolve().parents[1] / "web" / "data"
 
@@ -56,6 +57,14 @@ def main() -> None:
     """).df()
 
     n_personal = con.execute("SELECT COUNT(*) n FROM personal").fetchone()[0]
+
+    # Decantado por ministerio/sector prioritario
+    cfg = load_indicators()
+    personal_df = con.execute(
+        "SELECT id_entidad, person_id, regimen, nivel, cargo_norm, ingreso FROM personal").df()
+    ice_df = con.execute(
+        "SELECT id_entidad, nombre, ice, n_personal, meritocracia FROM ice_entidad").df()
+    sectores = sectores_m.consolidar(personal_df, ice_df, cfg.get("sectores_prioritarios", []))
     con.close()
 
     stats = {
@@ -73,7 +82,9 @@ def main() -> None:
     (OUT / "stats.json").write_text(json.dumps(stats, ensure_ascii=False, indent=2), encoding="utf-8")
     (OUT / "rotacion.json").write_text(rotacion.to_json(orient="records", force_ascii=False), encoding="utf-8")
     (OUT / "redes.json").write_text(redes.to_json(orient="records", force_ascii=False), encoding="utf-8")
-    print(f"✓ Exportado a {OUT}: ice.json ({len(ice)}), stats.json, rotacion.json ({len(rotacion)}), redes.json ({len(redes)})")
+    (OUT / "sectores.json").write_text(json.dumps(sectores, ensure_ascii=False), encoding="utf-8")
+    print(f"✓ Exportado a {OUT}: ice.json ({len(ice)}), stats.json, rotacion.json ({len(rotacion)}), "
+          f"redes.json ({len(redes)}), sectores.json ({len(sectores)})")
 
 
 if __name__ == "__main__":

@@ -47,3 +47,23 @@ estabilidad:
 interpretacion_ice:
   alto: 0.70
   medio: 0.45
+
+# --- Ministerios/sectores prioritarios para drill-down ("decantado") ---
+# Agrupación por patrón de NOMBRE (no estructura oficial de pliego). Configurable.
+sectores_prioritarios:
+  - clave: MIMP
+    nombre: "Mujer y Poblaciones Vulnerables"
+    central: "142"
+    patron: "MUJER|MIMP|POBLACIONES VULNERABLES|AURORA|VIOLENCIA CONTRA LAS MUJERES|INABIF|CONADIS|BIENESTAR FAMILIAR"
+  - clave: MIDIS
+    nombre: "Desarrollo e Inclusión Social (asistencia social)"
+    central: "14145"
+    patron: "DESARROLLO E INCLUSI|MIDIS|QALI WARMA|WASI MIKUNA|ALIMENTACI.N ESCOLAR|PENSI.N 65|PENSION 65|JUNTOS|FONCODES|CUNA M.S|\\bPAIS\\b|CONTIGO|FOCALIZACI|PLATAFORMAS DE ACCI|INCLUSI.N SOCIAL"
+  - clave: MINEDU
+    nombre: "Educación"
+    central: "133"
+    patron: "EDUCACI|MINEDU|PRONABEC|PRONIED"
+  - clave: MINSA
+    nombre: "Salud"
+    central: "143"
+    patron: "\\bSALUD\\b|MINSA|ESSALUD|DIRIS|DIRESA|GERESA|HOSPITAL|INSTITUTO NACIONAL DE SALUD|RED DE SALUD|SEGURO INTEGRAL"

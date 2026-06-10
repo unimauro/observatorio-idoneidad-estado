@@ -34,7 +34,7 @@ def main() -> None:
         print("⚠️  Passphrase corta: el bundle es público; usa 16+ caracteres aleatorios.")
 
     bundle = {}
-    for name in ("ice", "stats", "rotacion", "redes"):
+    for name in ("ice", "stats", "rotacion", "redes", "sectores"):
         p = DATA / f"{name}.json"
         if not p.exists():
             sys.exit(f"Falta {p}. Corre antes: make etl && python scripts/export_web.py")

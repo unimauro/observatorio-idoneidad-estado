@@ -7,6 +7,8 @@
   <meta name="description" content="Indicadores neutrales de mérito, estabilidad y capacidad de las entidades del Estado peruano. Datos preliminares cifrados; acceso de revisión con contraseña. Correlación no implica causalidad." />
   <meta name="author" content="Carlos Cárdenas Fernández" />
   <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <style>
     :root { --bg:#0b1220; --card:#111c33; --bd:#22304d; --tx:#e2e8f0; --mut:#94a3b8; --pri:#3b82f6; }
@@ -35,7 +37,7 @@
 </head>
 <body>
   <header>
-    <h1>🏛️ Observatorio de Idoneidad y Capacidad del Estado peruano</h1>
+    <h1><i class="fa-solid fa-landmark" style="color:#3b82f6"></i> Observatorio de Idoneidad y Capacidad del Estado peruano</h1>
     <div class="sub">Indicadores <b>descriptivos y neutrales</b> de mérito, estabilidad y capacidad por entidad · datos públicos</div>
   </header>
   <main>
@@ -47,7 +49,7 @@
 
     <!-- Acceso de revisión (descifrado en el navegador) -->
     <div id="lock" class="card lock">
-      <h2 style="margin-top:0">🔒 Acceso de revisión</h2>
+      <h2 style="margin-top:0"><i class="fa-solid fa-lock"></i> Acceso de revisión</h2>
       <p class="muted">Los datos con puntajes están <b>cifrados</b> (AES-GCM). Sin la contraseña no son legibles.
       Es una vista preliminar para revisión, no una publicación final.</p>
       <input id="pw" type="password" placeholder="Contraseña de revisión" autocomplete="off" />
@@ -61,8 +63,13 @@
     <div id="app">
       <div class="sub" id="meta"></div>
       <div class="grid" id="kpis" style="margin-top:1rem"></div>
-      <h2>Top 25 entidades por Índice ICE</h2>
+      <h2><i class="fa-solid fa-ranking-star"></i> Top 25 entidades por Índice ICE</h2>
       <div class="card"><canvas id="chTop" height="120"></canvas></div>
+
+      <h2><i class="fa-solid fa-building-columns"></i> Ministerios y sectores prioritarios</h2>
+      <p class="muted">Agrupación por nombre (no estructura oficial de pliego): ministerio central + entidades del sector. Preliminar.</p>
+      <div id="sectores" class="grid"></div>
+
       <div class="grid">
         <div class="card"><h2 style="margin-top:0">Régimen laboral</h2><canvas id="chReg" height="200"></canvas></div>
         <div class="card"><h2 style="margin-top:0">Mérito vs. capacidad</h2><canvas id="chSca" height="200"></canvas></div>
@@ -77,12 +84,12 @@
           </tr></thead><tbody></tbody></table>
         </div>
       </div>
-      <h2>Cargos de decisión con mayor recambio</h2>
+      <h2><i class="fa-solid fa-arrows-rotate"></i> Cargos de decisión con mayor recambio</h2>
       <div class="card" style="overflow:auto;max-height:420px">
         <table id="rot"><thead><tr><th>Entidad</th><th>Cargo</th><th>Nivel</th><th>Personas</th></tr></thead><tbody></tbody></table>
       </div>
 
-      <h2>Red de movilidad institucional</h2>
+      <h2><i class="fa-solid fa-diagram-project"></i> Red de movilidad institucional</h2>
       <p class="muted">Entidades conectadas por personal que pasó por ambas (neutral, entidad↔entidad; no perfila personas).</p>
       <div class="grid">
         <div class="card"><h2 style="margin-top:0;font-size:.95rem">Hubs (mayor PageRank)</h2>
