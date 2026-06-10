@@ -32,7 +32,7 @@ document.getElementById('unlock').onclick = async () => {
   }
 };
 
-function render({ ice, stats, rotacion }) {
+function render({ ice, stats, rotacion, redes }) {
   document.getElementById('meta').textContent =
     `${stats.entidades_con_ice} entidades · ${stats.registros_personal.toLocaleString('es-PE')} registros · generado ${stats.generado}`;
 
@@ -82,4 +82,11 @@ function render({ ice, stats, rotacion }) {
 
   document.querySelector('#rot tbody').innerHTML = rotacion.map(r =>
     `<tr><td>${r.entidad}</td><td>${r.cargo_norm}</td><td>${r.nivel}</td><td>${r.personas}</td></tr>`).join('');
+
+  // Red de movilidad: hubs (por PageRank) y vínculos más fuertes
+  const hubs = [...ice].filter(d => d.pagerank != null).sort((a, b) => b.pagerank - a.pagerank).slice(0, 20);
+  document.querySelector('#hubs tbody').innerHTML = hubs.map(d =>
+    `<tr><td>${d.nombre}</td><td>${d.pagerank}</td><td>${d.grado || 0}</td></tr>`).join('');
+  document.querySelector('#vinc tbody').innerHTML = (redes || []).slice(0, 40).map(e =>
+    `<tr><td>${e.origen_nombre}</td><td>${e.destino_nombre}</td><td>${e.peso}</td></tr>`).join('');
 }
