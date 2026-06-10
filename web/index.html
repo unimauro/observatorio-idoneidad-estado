@@ -80,9 +80,14 @@
       <h2><i class="fa-solid fa-ranking-star"></i> Top 25 entidades por Índice ICE</h2>
       <div class="card"><canvas id="chTop" height="120"></canvas></div>
 
-      <h2><i class="fa-solid fa-building-columns"></i> Ministerios y sectores prioritarios</h2>
-      <p class="muted">Agrupación por nombre (no estructura oficial de pliego): ministerio central + entidades del sector. Preliminar.</p>
+      <h2><i class="fa-solid fa-building-columns"></i> Ministerios — análisis desagregado</h2>
+      <p class="muted">Ordenados por <b>planilla mensual</b> (proxy de tamaño; el presupuesto total requiere datos MEF). Agrupación por nombre, no estructura oficial de pliego. <b>Clic en un ministerio</b> para ver su detalle.</p>
+      <div class="card"><h2 style="margin-top:0;font-size:.95rem">Profesionalización por ministerio (% mérito)</h2>
+        <canvas id="chMin" height="150"></canvas>
+        <p class="muted">Barra = % acceso por <b>mérito</b> (componente robusto hoy). El IP (mérito × estabilidad × idoneidad) es preliminar: estabilidad subestimada por cobertura temporal corta; idoneidad llega en Fase 2.</p>
+      </div>
       <div id="sectores" class="grid"></div>
+      <div id="sectorDetail"></div>
 
       <div class="grid">
         <div class="card"><h2 style="margin-top:0">Régimen laboral</h2><canvas id="chReg" height="200"></canvas></div>

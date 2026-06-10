@@ -51,19 +51,51 @@ interpretacion_ice:
 # --- Ministerios/sectores prioritarios para drill-down ("decantado") ---
 # Agrupación por patrón de NOMBRE (no estructura oficial de pliego). Configurable.
 sectores_prioritarios:
-  - clave: MIMP
-    nombre: "Mujer y Poblaciones Vulnerables"
-    central: "142"
-    patron: "MUJER|MIMP|POBLACIONES VULNERABLES|AURORA|VIOLENCIA CONTRA LAS MUJERES|INABIF|CONADIS|BIENESTAR FAMILIAR"
+  - clave: MINEDU
+    nombre: "Educación"
+    central: "133"
+    patron: "EDUCACI|MINEDU|PRONABEC|PRONIED|SINEACE"
+  - clave: MINSA
+    nombre: "Salud"
+    central: "143"
+    patron: "\\bSALUD\\b|MINSA|ESSALUD|\\bDIRIS\\b|DIRESA|GERESA|HOSPITAL|INSTITUTO NACIONAL DE SALUD|RED DE SALUD|SEGURO INTEGRAL|\\bINEN\\b|INSTITUTO NACIONAL DE ENFERMEDADES"
+  - clave: MTC
+    nombre: "Transportes y Comunicaciones"
+    central: "165"
+    patron: "TRANSPORTES Y COMUNICACIONES|\\bMTC\\b|PROVIAS|PRONATEL|\\bATU\\b|SUTRAN|AUTORIDAD PORTUARIA"
+  - clave: MEF
+    nombre: "Economía y Finanzas"
+    central: "153"
+    patron: "ECONOMIA Y FINANZAS|\\bMEF\\b|SUNAT|NORMALIZACI.N PREVISIONAL|\\bONP\\b|PERU COMPRAS|PERUCOMPRAS"
+  - clave: MININTER
+    nombre: "Interior"
+    central: "144"
+    patron: "\\bINTERIOR\\b|MININTER|POLICIA NACIONAL|\\bPNP\\b|MIGRACIONES|SUCAMEC|BOMBEROS|SANIDAD POLICIAL"
+  - clave: MINDEF
+    nombre: "Defensa"
+    central: "152"
+    patron: "\\bDEFENSA\\b|MINDEF|EJ.RCITO|MARINA DE GUERRA|FUERZA A.REA|COMANDO CONJUNTO|\\bINDECI\\b"
+  - clave: MIDAGRI
+    nombre: "Desarrollo Agrario y Riego"
+    central: "160"
+    patron: "AGRARIO|AGRICULTURA|MIDAGRI|MINAGRI|SENASA|AGRORURAL|AUTORIDAD NACIONAL DEL AGUA|\\bANA\\b|\\bINIA\\b|SERFOR"
+  - clave: VIVIENDA
+    nombre: "Vivienda, Construcción y Saneamiento"
+    central: "164"
+    patron: "VIVIENDA|CONSTRUCCI.N Y SANEAMIENTO|SEDAPAL|COFOPRI|SENCICO|MIVIVIENDA"
+  - clave: MTPE
+    nombre: "Trabajo y Promoción del Empleo"
+    central: "169"
+    patron: "TRABAJO Y PROMOCI.N|\\bMTPE\\b|SUNAFIL"
+  - clave: MINJUS
+    nombre: "Justicia y Derechos Humanos"
+    central: "158"
+    patron: "JUSTICIA Y DERECHOS HUMANOS|MINJUS|\\bINPE\\b|SUNARP"
   - clave: MIDIS
     nombre: "Desarrollo e Inclusión Social (asistencia social)"
     central: "14145"
     patron: "DESARROLLO E INCLUSI|MIDIS|QALI WARMA|WASI MIKUNA|ALIMENTACI.N ESCOLAR|PENSI.N 65|PENSION 65|JUNTOS|FONCODES|CUNA M.S|\\bPAIS\\b|CONTIGO|FOCALIZACI|PLATAFORMAS DE ACCI|INCLUSI.N SOCIAL"
-  - clave: MINEDU
-    nombre: "Educación"
-    central: "133"
-    patron: "EDUCACI|MINEDU|PRONABEC|PRONIED"
-  - clave: MINSA
-    nombre: "Salud"
-    central: "143"
-    patron: "\\bSALUD\\b|MINSA|ESSALUD|DIRIS|DIRESA|GERESA|HOSPITAL|INSTITUTO NACIONAL DE SALUD|RED DE SALUD|SEGURO INTEGRAL"
+  - clave: MIMP
+    nombre: "Mujer y Poblaciones Vulnerables"
+    central: "142"
+    patron: "MUJER|MIMP|POBLACIONES VULNERABLES|AURORA|VIOLENCIA CONTRA LAS MUJERES|INABIF|CONADIS|BIENESTAR FAMILIAR"

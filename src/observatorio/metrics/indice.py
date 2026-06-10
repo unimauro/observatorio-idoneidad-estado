@@ -31,6 +31,14 @@ def compute(merit: pd.DataFrame, estab: pd.DataFrame, cap: pd.DataFrame,
     ) / (base + wi)
     df["ice"] = df["ice"].round(4)
 
+    # Índice de Profesionalización (IP) = mérito × estabilidad × idoneidad.
+    # idoneidad es factor neutro (=1) hasta Fase 2 (credenciales). Mide "salud del
+    # capital humano": acceso por mérito que además permanece y es idóneo.
+    idon_factor = df["idoneidad"].where(df["idoneidad"].fillna(0) > 0, 1.0)
+    df["profesionalizacion"] = (df["meritocracia"].fillna(0)
+                                * df["estabilidad"].fillna(0)
+                                * idon_factor).round(4)
+
     thr = cfg["interpretacion_ice"]
     df["nivel_ice"] = pd.cut(df["ice"], bins=[-0.01, thr["medio"], thr["alto"], 1.01],
                              labels=["bajo", "medio", "alto"])

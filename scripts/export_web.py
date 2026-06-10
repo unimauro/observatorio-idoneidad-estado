@@ -31,7 +31,8 @@ def main() -> None:
                ROUND(capacidad,4) capacidad, n_personal,
                ROUND(permanencia_media_meses,1) permanencia_media_meses,
                ROUND(rotacion_cargos_decision,4) rotacion_cargos_decision,
-               ROUND(pagerank,6) pagerank, ROUND(betweenness,6) betweenness, grado, comunidad
+               ROUND(pagerank,6) pagerank, ROUND(betweenness,6) betweenness, grado, comunidad,
+               ROUND(profesionalizacion,4) profesionalizacion
         FROM ice_entidad WHERE ice IS NOT NULL ORDER BY ice DESC
     """).df()
 
@@ -63,7 +64,7 @@ def main() -> None:
     personal_df = con.execute(
         "SELECT id_entidad, person_id, regimen, nivel, cargo_norm, ingreso FROM personal").df()
     ice_df = con.execute(
-        "SELECT id_entidad, nombre, ice, n_personal, meritocracia FROM ice_entidad").df()
+        "SELECT id_entidad, nombre, ice, n_personal, meritocracia, estabilidad, profesionalizacion FROM ice_entidad").df()
     sectores = sectores_m.consolidar(personal_df, ice_df, cfg.get("sectores_prioritarios", []))
     con.close()
 

@@ -27,8 +27,17 @@ def consolidar(personal: pd.DataFrame, ice: pd.DataFrame, sectores_cfg: list[dic
             continue
         npers = int(psec["person_id"].nunique())
         w = sub["n_personal"].fillna(0)
-        ice_pond = float((sub["ice"].fillna(0) * w).sum() / w.sum()) if w.sum() else float(sub["ice"].mean())
-        merito_pond = float((sub["meritocracia"].fillna(0) * w).sum() / w.sum()) if w.sum() else float(sub["meritocracia"].mean())
+
+        def pond(col: str) -> float:
+            if col not in sub:
+                return 0.0
+            return float((sub[col].fillna(0) * w).sum() / w.sum()) if w.sum() else float(sub[col].fillna(0).mean())
+
+        ice_pond = pond("ice")
+        merito_pond = pond("meritocracia")
+        prof_pond = pond("profesionalizacion")
+        # masa salarial mensual (proxy de tamaño; el presupuesto total requiere datos MEF)
+        masa = float(psec["ingreso"].dropna().sum()) if "ingreso" in psec else 0.0
 
         regimen = psec["regimen"].value_counts().head(8).to_dict()
         nivel = psec["nivel"].value_counts().to_dict()
@@ -45,7 +54,9 @@ def consolidar(personal: pd.DataFrame, ice: pd.DataFrame, sectores_cfg: list[dic
         out.append({
             "clave": s["clave"], "nombre": s["nombre"], "central": central,
             "n_entidades": int(len(sub)), "n_personal": npers,
+            "masa_salarial_mensual": round(masa, 2),
             "ice_ponderado": round(ice_pond, 4), "merito_ponderado": round(merito_pond, 4),
+            "profesionalizacion": round(prof_pond, 4),
             "n_decision": n_decision,
             "ingreso_promedio": round(ingreso_prom, 2) if ingreso_prom else None,
             "regimen": [{"regimen": k, "n": int(v)} for k, v in regimen.items()],
@@ -54,4 +65,5 @@ def consolidar(personal: pd.DataFrame, ice: pd.DataFrame, sectores_cfg: list[dic
                                "ice": round(float(r["ice"]), 4) if pd.notna(r["ice"]) else None} for r in top_sub],
             "top_cargos_decision": [{"cargo": c[0], "n": int(c[1])} for c in top_cargos],
         })
+    out.sort(key=lambda s: s["masa_salarial_mensual"], reverse=True)
     return out
