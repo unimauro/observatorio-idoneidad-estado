@@ -29,8 +29,18 @@ def main() -> None:
                ROUND(meritocracia,4) meritocracia, ROUND(estabilidad,4) estabilidad,
                ROUND(capacidad,4) capacidad, n_personal,
                ROUND(permanencia_media_meses,1) permanencia_media_meses,
-               ROUND(rotacion_cargos_decision,4) rotacion_cargos_decision
+               ROUND(rotacion_cargos_decision,4) rotacion_cargos_decision,
+               ROUND(pagerank,6) pagerank, ROUND(betweenness,6) betweenness, grado, comunidad
         FROM ice_entidad WHERE ice IS NOT NULL ORDER BY ice DESC
+    """).df()
+
+    # Aristas de la red de movilidad institucional (con nombres), top por peso
+    redes = con.execute("""
+        SELECT a.origen, eo.nombre origen_nombre, a.destino, ed.nombre destino_nombre, a.peso
+        FROM red_aristas a
+        JOIN ice_entidad eo ON eo.id_entidad = a.origen
+        JOIN ice_entidad ed ON ed.id_entidad = a.destino
+        ORDER BY a.peso DESC LIMIT 200
     """).df()
 
     regimen = con.execute(
@@ -62,7 +72,8 @@ def main() -> None:
     (OUT / "ice.json").write_text(ice.to_json(orient="records", force_ascii=False), encoding="utf-8")
     (OUT / "stats.json").write_text(json.dumps(stats, ensure_ascii=False, indent=2), encoding="utf-8")
     (OUT / "rotacion.json").write_text(rotacion.to_json(orient="records", force_ascii=False), encoding="utf-8")
-    print(f"✓ Exportado a {OUT}: ice.json ({len(ice)}), stats.json, rotacion.json ({len(rotacion)})")
+    (OUT / "redes.json").write_text(redes.to_json(orient="records", force_ascii=False), encoding="utf-8")
+    print(f"✓ Exportado a {OUT}: ice.json ({len(ice)}), stats.json, rotacion.json ({len(rotacion)}), redes.json ({len(redes)})")
 
 
 if __name__ == "__main__":

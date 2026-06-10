@@ -11,7 +11,7 @@ import pandas as pd
 
 from ..config import PT_DATA_DIR, DUCKDB_PATH, INTERIM_DIR, load_indicators
 from .normalize import norm_nombre, identity_key, nivel_desde_cargo, norm_text
-from ..metrics import meritocracia, estabilidad, capacidad, indice
+from ..metrics import meritocracia, estabilidad, capacidad, indice, redes
 
 
 def _person_id(idkey: str) -> str:
@@ -68,17 +68,23 @@ def run() -> None:
     ice = ice.merge(entidades[["id_entidad", "nombre", "categoria", "tipo_label"]],
                     on="id_entidad", how="left")
 
+    print("· Red de movilidad institucional (centralidad/comunidades)…")
+    cent, edges = redes.centralidad(personal)
+    ice = ice.merge(cent, on="id_entidad", how="left")
+
     print("· Escribiendo Parquet (intermedios versionables) y DuckDB…")
     cols_person = ["person_id", "id_entidad", "entidad", "anio", "mes", "regimen",
                    "cargo_norm", "nivel", "ingreso", "fuente_url", "captured_at"]
     personal[cols_person].to_parquet(INTERIM_DIR / "personal.parquet", index=False)
     ice.to_parquet(INTERIM_DIR / "ice_entidad.parquet", index=False)
     entidades.to_parquet(INTERIM_DIR / "entidades.parquet", index=False)
+    edges.to_parquet(INTERIM_DIR / "red_aristas.parquet", index=False)
 
     con = duckdb.connect(str(DUCKDB_PATH))
     con.execute("CREATE OR REPLACE TABLE entidades AS SELECT * FROM entidades")
     con.execute(f"CREATE OR REPLACE TABLE personal AS SELECT * FROM read_parquet('{INTERIM_DIR / 'personal.parquet'}')")
     con.execute(f"CREATE OR REPLACE TABLE ice_entidad AS SELECT * FROM read_parquet('{INTERIM_DIR / 'ice_entidad.parquet'}')")
+    con.execute(f"CREATE OR REPLACE TABLE red_aristas AS SELECT * FROM read_parquet('{INTERIM_DIR / 'red_aristas.parquet'}')")
     con.close()
 
     top = ice.dropna(subset=["ice"]).head(5)[["nombre", "ice", "nivel_ice"]]
