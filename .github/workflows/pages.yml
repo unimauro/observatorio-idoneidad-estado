@@ -1,4 +1,6 @@
 name: Deploy site to GitHub Pages
+# Publica web/ a la rama gh-pages vía git (peaceiris), NO usa la API deploy-pages
+# (que tuvo un incidente 401). Pages sirve desde la rama gh-pages (build_type=legacy).
 on:
   push:
     branches: [main]
@@ -6,25 +8,20 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: pages-branch
   cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: peaceiris/actions-gh-pages@v4
         with:
-          path: web
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./web
+          publish_branch: gh-pages
+          enable_jekyll: false
