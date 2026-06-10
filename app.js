@@ -32,7 +32,8 @@ document.getElementById('unlock').onclick = async () => {
   }
 };
 
-function render({ ice, stats, rotacion, redes }) {
+function render({ ice, stats, rotacion, redes, sectores }) {
+  renderSectores(sectores || []);
   document.getElementById('meta').textContent =
     `${stats.entidades_con_ice} entidades · ${stats.registros_personal.toLocaleString('es-PE')} registros · generado ${stats.generado}`;
 
@@ -89,4 +90,33 @@ function render({ ice, stats, rotacion, redes }) {
     `<tr><td>${d.nombre}</td><td>${d.pagerank}</td><td>${d.grado || 0}</td></tr>`).join('');
   document.querySelector('#vinc tbody').innerHTML = (redes || []).slice(0, 40).map(e =>
     `<tr><td>${e.origen_nombre}</td><td>${e.destino_nombre}</td><td>${e.peso}</td></tr>`).join('');
+}
+
+const ICONS = { MIMP: 'fa-venus', MIDIS: 'fa-hand-holding-heart', MINEDU: 'fa-graduation-cap', MINSA: 'fa-heart-pulse' };
+function renderSectores(sectores) {
+  const cont = document.getElementById('sectores');
+  if (!cont) return;
+  cont.innerHTML = sectores.map(s => {
+    const reg = (s.regimen || []).slice(0, 4).map(r => `${r.regimen}: ${r.n}`).join(' · ');
+    const ents = (s.top_entidades || []).slice(0, 5).map(e =>
+      `<tr><td>${e.nombre}</td><td style="text-align:right">${e.n_personal.toLocaleString('es-PE')}</td><td style="text-align:right">${e.ice ?? '—'}</td></tr>`).join('');
+    const cargos = (s.top_cargos_decision || []).slice(0, 5).map(c => `${c.cargo} (${c.n})`).join(' · ');
+    return `<div class="card">
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <i class="fa-solid ${ICONS[s.clave] || 'fa-building'}" style="color:#3b82f6"></i>
+        <b>${s.clave}</b> <span class="pill ${s.ice_ponderado >= .70 ? 'alto' : s.ice_ponderado >= .45 ? 'medio' : 'bajo'}">ICE ${s.ice_ponderado}</span>
+      </div>
+      <div class="muted" style="margin:.2rem 0 .5rem">${s.nombre}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;font-size:.8rem">
+        <div>👥 Personal: <b>${s.n_personal.toLocaleString('es-PE')}</b></div>
+        <div>🏢 Entidades: <b>${s.n_entidades}</b></div>
+        <div>⭐ Mérito: <b>${s.merito_ponderado}</b></div>
+        <div>🎯 Cargos decisión: <b>${s.n_decision}</b></div>
+        ${s.ingreso_promedio ? `<div>💰 Ingreso prom.: <b>S/ ${s.ingreso_promedio.toLocaleString('es-PE')}</b></div>` : ''}
+      </div>
+      <div class="muted" style="margin:.5rem 0 .2rem"><b>Régimen:</b> ${reg}</div>
+      <table style="margin-top:.3rem"><thead><tr><th>Sub-entidad</th><th style="text-align:right">Personal</th><th style="text-align:right">ICE</th></tr></thead><tbody>${ents}</tbody></table>
+      <div class="muted" style="margin-top:.4rem"><b>Cargos de decisión top:</b> ${cargos || '—'}</div>
+    </div>`;
+  }).join('');
 }
