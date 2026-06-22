@@ -99,3 +99,31 @@ sectores_prioritarios:
     nombre: "Mujer y Poblaciones Vulnerables"
     central: "142"
     patron: "MUJER|MIMP|POBLACIONES VULNERABLES|AURORA|VIOLENCIA CONTRA LAS MUJERES|INABIF|CONADIS|BIENESTAR FAMILIAR"
+  - clave: PCM
+    nombre: "Presidencia del Consejo de Ministros"
+    central: "145"
+    patron: "CONSEJO DE MINISTROS|\\bPCM\\b|PRESIDENCIA DEL CONSEJO|CEPLAN|INDECOPI|\\bDEVIDA\\b|\\bSERVIR\\b|SUNASS|OSINERGMIN|OSIPTEL|OSITRAN"
+  - clave: MINAM
+    nombre: "Ambiente"
+    central: "127"
+    patron: "DEL AMBIENTE|MINAM|SENAMHI|SERNANP|\\bOEFA\\b|\\bIIAP\\b|SENACE|INAIGEM"
+  - clave: MINCUL
+    nombre: "Cultura"
+    central: "77"
+    patron: "DE CULTURA|MINCUL|BIBLIOTECA NACIONAL|ARCHIVO GENERAL DE LA NACI"
+  - clave: PRODUCE
+    nombre: "Producción"
+    central: "139"
+    patron: "PRODUCCI|PRODUCE|\\bITP\\b|SANIPES|IMARPE|FONDEPES"
+  - clave: MINEM
+    nombre: "Energía y Minas"
+    central: "137"
+    patron: "ENERG.A Y MINAS|MINEM|INGEMMET|\\bIPEN\\b"
+  - clave: MINCETUR
+    nombre: "Comercio Exterior y Turismo"
+    central: "138"
+    patron: "COMERCIO EXTERIOR Y TURISMO|MINCETUR|PROMPERU|CENFOTUR"
+  - clave: RREE
+    nombre: "Relaciones Exteriores"
+    central: "140"
+    patron: "RELACIONES EXTERIORES|\\bRREE\\b|CANCILLER|AGENCIA PERUANA DE COOPERACI"

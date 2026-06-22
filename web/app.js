@@ -97,6 +97,8 @@ const ICONS = {
   MININTER: 'fa-shield-halved', MINDEF: 'fa-jet-fighter', MIDAGRI: 'fa-wheat-awn',
   VIVIENDA: 'fa-house', MTPE: 'fa-briefcase', MINJUS: 'fa-scale-balanced',
   MIDIS: 'fa-hand-holding-heart', MIMP: 'fa-venus',
+  PCM: 'fa-landmark-flag', MINAM: 'fa-leaf', MINCUL: 'fa-masks-theater',
+  PRODUCE: 'fa-industry', MINEM: 'fa-bolt', MINCETUR: 'fa-suitcase-rolling', RREE: 'fa-earth-americas',
 };
 const _charts = {};
 const money = v => v >= 1e6 ? `S/ ${(v / 1e6).toFixed(1)}M` : `S/ ${(v || 0).toLocaleString('es-PE')}`;
