@@ -126,10 +126,10 @@ function renderSectores(sectores) {
       </div>
       <div class="muted" style="margin:.2rem 0 .5rem;font-size:.75rem">${s.nombre}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.25rem;font-size:.78rem">
+        <div>🏦 Presupuesto: <b>${s.presupuesto ? money(s.presupuesto.pim_mm * 1e6) : '—'}</b></div>
+        <div>✅ Ejecución: <b>${s.presupuesto ? s.presupuesto.ejecucion_pct + '%' : '—'}</b></div>
         <div>💰 Planilla/mes: <b>${money(s.masa_salarial_mensual)}</b></div>
         <div>👥 Personal: <b>${s.n_personal.toLocaleString('es-PE')}</b></div>
-        <div>🏢 Entidades: <b>${s.n_entidades}</b></div>
-        <div>🎯 Cargos dec.: <b>${s.n_decision}</b></div>
       </div>
       <div class="muted" style="margin-top:.4rem;font-size:.72rem">clic para detalle ↓</div>
     </div>`).join('');
@@ -145,13 +145,15 @@ function renderSectorDetail(s) {
   const cargos = (s.top_cargos_decision || []).slice(0, 8).map(c => `${c.cargo} (${c.n})`).join(' · ');
   d.innerHTML = `<div class="card" style="border-color:#3b82f6">
     <h2 style="margin-top:0"><i class="fa-solid ${ICONS[s.clave] || 'fa-building'}"></i> ${s.clave} — ${s.nombre}</h2>
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(110px,1fr))">
+      ${s.presupuesto ? `<div class="kpi"><div class="v">${money(s.presupuesto.pim_mm * 1e6)}</div><div class="l">presupuesto (PIM ${s.presupuesto.year})</div></div>
+      <div class="kpi"><div class="v">${s.presupuesto.ejecucion_pct}%</div><div class="l">ejecución (devengado)</div></div>
+      <div class="kpi"><div class="v">S/ ${((s.presupuesto_por_trabajador || 0) / 1000).toFixed(0)}k</div><div class="l">presup. por trabajador</div></div>` : ''}
       <div class="kpi"><div class="v">${money(s.masa_salarial_mensual)}</div><div class="l">planilla/mes</div></div>
       <div class="kpi"><div class="v">${s.n_personal.toLocaleString('es-PE')}</div><div class="l">personal</div></div>
       <div class="kpi"><div class="v">${s.merito_ponderado}</div><div class="l">% mérito</div></div>
-      <div class="kpi"><div class="v">${s.ice_ponderado}</div><div class="l">ICE</div></div>
-      <div class="kpi"><div class="v">${s.n_decision}</div><div class="l">cargos decisión</div></div>
     </div>
+    ${s.presupuesto ? `<p class="muted" style="margin:.3rem 0">Presupuesto real <b>MEF/SIAF ${s.presupuesto.year}</b> (PIM y devengado). <a href="https://api.datosabiertos.mef.gob.pe" target="_blank" rel="noopener">Datos Abiertos MEF</a>.</p>` : ''}
     <div class="grid" style="margin-top:1rem">
       <div><h2 style="font-size:.9rem">Régimen laboral</h2><canvas id="chSecReg" height="200"></canvas></div>
       <div><h2 style="font-size:.9rem">Nivel jerárquico</h2><canvas id="chSecNiv" height="200"></canvas></div>

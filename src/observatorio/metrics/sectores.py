@@ -17,7 +17,9 @@ def _match_ids(ice: pd.DataFrame, patron: str) -> list[str]:
     return ice[ice["nombre"].fillna("").map(lambda n: bool(rx.search(n)))]["id_entidad"].tolist()
 
 
-def consolidar(personal: pd.DataFrame, ice: pd.DataFrame, sectores_cfg: list[dict]) -> list[dict]:
+def consolidar(personal: pd.DataFrame, ice: pd.DataFrame, sectores_cfg: list[dict],
+               presupuesto: dict | None = None) -> list[dict]:
+    presupuesto = presupuesto or {}
     out = []
     for s in sectores_cfg:
         ids = _match_ids(ice, s["patron"])
@@ -51,9 +53,15 @@ def consolidar(personal: pd.DataFrame, ice: pd.DataFrame, sectores_cfg: list[dic
         central_row = ice[ice["id_entidad"] == str(s["central"])]
         central = central_row["nombre"].iloc[0] if not central_row.empty else s["nombre"]
 
+        pres = presupuesto.get(s["clave"])
+        pim = pres["pim_mm"] if pres else None
+        # presupuesto por trabajador (S/ al año por persona del sector, aprox.)
+        pres_por_trab = round(pim * 1e6 / npers) if (pim and npers) else None
+
         out.append({
             "clave": s["clave"], "nombre": s["nombre"], "central": central,
             "n_entidades": int(len(sub)), "n_personal": npers,
+            "presupuesto": pres, "presupuesto_por_trabajador": pres_por_trab,
             "masa_salarial_mensual": round(masa, 2),
             "ice_ponderado": round(ice_pond, 4), "merito_ponderado": round(merito_pond, 4),
             "profesionalizacion": round(prof_pond, 4),
@@ -65,5 +73,7 @@ def consolidar(personal: pd.DataFrame, ice: pd.DataFrame, sectores_cfg: list[dic
                                "ice": round(float(r["ice"]), 4) if pd.notna(r["ice"]) else None} for r in top_sub],
             "top_cargos_decision": [{"cargo": c[0], "n": int(c[1])} for c in top_cargos],
         })
-    out.sort(key=lambda s: s["masa_salarial_mensual"], reverse=True)
+    # ordenar por presupuesto (PIM) si está disponible; si no, por planilla
+    out.sort(key=lambda s: (s["presupuesto"]["pim_mm"] if s.get("presupuesto") else 0,
+                            s["masa_salarial_mensual"]), reverse=True)
     return out

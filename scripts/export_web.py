@@ -65,7 +65,9 @@ def main() -> None:
         "SELECT id_entidad, person_id, regimen, nivel, cargo_norm, ingreso FROM personal").df()
     ice_df = con.execute(
         "SELECT id_entidad, nombre, ice, n_personal, meritocracia, estabilidad, profesionalizacion FROM ice_entidad").df()
-    sectores = sectores_m.consolidar(personal_df, ice_df, cfg.get("sectores_prioritarios", []))
+    pres_path = DUCKDB_PATH.parents[1] / "interim" / "presupuesto_sector.json"
+    presupuesto = json.loads(pres_path.read_text(encoding="utf-8")) if pres_path.exists() else {}
+    sectores = sectores_m.consolidar(personal_df, ice_df, cfg.get("sectores_prioritarios", []), presupuesto)
     con.close()
 
     stats = {
